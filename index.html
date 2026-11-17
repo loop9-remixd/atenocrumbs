@@ -1,0 +1,810 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="dark" />
+    <link rel="icon" href="data:," />
+    <title>November Meal Plan</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+    <style>
+      button, [role="button"], select, summary, input:not([type="checkbox"], [type="radio"]) { min-height: 2rem; }
+      * { box-sizing: border-box; }
+      :root {
+        --plum: #241536;
+        --plum-deep: #150c24;
+        --gold: #f2c14e;
+        --gold-soft: #eec27a;
+        --orange: #e07b24;
+        --orange-deep: #bc550d;
+        --cream: #fdf7ea;
+        --cream-dim: #f3e8d2;
+        --ink: #3a2415;
+        --ink-soft: #71563d;
+        --teal: #175d6e;
+        --teal-deep: #0e3d49;
+        --brown-pill: #8a5a2b;
+        --red: #c8451b;
+      }
+      html, body { margin: 0; padding: 0; }
+      body {
+        font-family: "Nunito", system-ui, sans-serif;
+        background:
+          radial-gradient(1100px 480px at 50% -120px, #4a2358 0%, rgba(74,35,88,0) 60%),
+          radial-gradient(700px 300px at 85% 0%, rgba(224,123,36,.28) 0%, rgba(224,123,36,0) 60%),
+          linear-gradient(180deg, var(--plum) 0%, var(--plum-deep) 100%);
+        background-attachment: fixed;
+        color: var(--cream);
+        min-height: 100vh;
+      }
+      .wrap { max-width: 1240px; margin: 0 auto; padding: 20px 16px 40px; }
+
+      /* ---------- Header ---------- */
+      header { text-align: center; padding: 14px 8px 4px; position: relative; }
+      .leaf { position: absolute; top: 6px; width: 44px; height: 44px; opacity: .9; }
+      .leaf.left { left: 4%; transform: rotate(-18deg); }
+      .leaf.right { right: 4%; transform: scaleX(-1) rotate(-18deg); }
+      @media (max-width: 640px) { .leaf { display: none; } }
+      h1 {
+        font-family: "Playfair Display", Georgia, serif;
+        font-weight: 900;
+        font-size: clamp(30px, 6.2vw, 58px);
+        letter-spacing: .06em;
+        margin: 0;
+        color: var(--gold);
+        text-shadow: 0 2px 0 rgba(0,0,0,.35), 0 0 26px rgba(242,193,78,.25);
+      }
+      .week-range {
+        margin-top: 6px;
+        font-weight: 800;
+        letter-spacing: .42em;
+        font-size: clamp(12px, 2.4vw, 16px);
+        color: var(--cream);
+        text-indent: .42em;
+      }
+      .hint { margin: 10px 0 0; color: var(--cream-dim); font-size: 14.5px; font-weight: 600; }
+
+      /* ---------- Week switcher ---------- */
+      .week-nav {
+        display: flex; align-items: center; justify-content: center; gap: 12px;
+        margin: 18px 0 20px; flex-wrap: wrap;
+      }
+      .week-nav button {
+        font-family: inherit; font-weight: 800; font-size: 15px;
+        color: var(--gold); background: rgba(242,193,78,.08);
+        border: 2px solid rgba(242,193,78,.55); border-radius: 999px;
+        padding: 10px 18px; min-height: 44px; cursor: pointer;
+      }
+      .week-nav button:hover:not(:disabled) { background: rgba(242,193,78,.2); }
+      .week-nav button:disabled { opacity: .35; cursor: default; }
+      .week-nav .wk-label { font-weight: 900; font-size: 16px; letter-spacing: .04em; color: var(--cream); min-width: 190px; text-align: center; }
+
+      /* ---------- Day grid ---------- */
+      .week-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; }
+      @media (max-width: 1080px) { .week-grid { grid-template-columns: repeat(4, 1fr); } }
+      @media (max-width: 700px)  { .week-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; } }
+      /* Phones: single-column list of big, easy-to-tap day cards */
+      @media (max-width: 560px) {
+        .week-grid { grid-template-columns: 1fr; gap: 10px; }
+        .card { padding: 24px 16px 20px; }
+        .card .icon { width: 68px; height: 68px; }
+        .card .meal { font-size: 20px; }
+        .card .side { font-size: 15px; }
+        .card .date-num { font-size: 21px; }
+        .wk-label { min-width: 0; }
+      }
+      .day { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+      .dow {
+        background: linear-gradient(180deg, #ec8a30, var(--orange));
+        color: #fff; font-weight: 900; letter-spacing: .22em; text-indent: .22em;
+        text-align: center; padding: 8px 4px; border-radius: 9px; font-size: 14px;
+        box-shadow: 0 2px 6px rgba(0,0,0,.35);
+      }
+      .card {
+        position: relative; flex: 1; width: 100%;
+        font-family: inherit; text-align: center; cursor: pointer;
+        background: var(--cream); color: var(--ink);
+        border: none; border-radius: 14px;
+        padding: 30px 10px 16px;
+        box-shadow: 0 4px 14px rgba(0,0,0,.4);
+        display: flex; flex-direction: column; align-items: center; gap: 4px;
+      }
+      .card:hover { filter: brightness(1.04); }
+      .card:focus-visible, .week-nav button:focus-visible, .modal-close:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+      .card .date-num {
+        position: absolute; top: 9px; left: 12px;
+        font-weight: 900; font-size: 19px; color: var(--red);
+      }
+      .card .icon { width: 62px; height: 62px; margin: 2px 0 4px; }
+      .card .icon svg { width: 100%; height: 100%; display: block; }
+      .card .meal { font-weight: 900; font-size: 17.5px; line-height: 1.18; }
+      .card .side { font-size: 13.5px; font-weight: 700; color: var(--ink-soft); line-height: 1.3; }
+      .pill {
+        margin-top: 8px; display: inline-block;
+        background: var(--brown-pill); color: #ffe9c9;
+        font-size: 10.5px; font-weight: 900; letter-spacing: .14em;
+        padding: 5px 10px; border-radius: 999px;
+      }
+      .today-badge {
+        position: absolute; top: 9px; right: 10px;
+        background: var(--red); color: #fff;
+        font-size: 10px; font-weight: 900; letter-spacing: .12em;
+        padding: 4px 8px; border-radius: 999px;
+      }
+      .card.is-today { box-shadow: 0 0 0 3px var(--gold), 0 4px 14px rgba(0,0,0,.4); }
+
+      /* Movie night card */
+      .card.movie {
+        background: linear-gradient(180deg, var(--teal) 0%, var(--teal-deep) 100%);
+        color: #fff;
+      }
+      .card.movie .date-num { color: var(--gold); }
+      .card.movie .movie-name {
+        font-family: "Playfair Display", Georgia, serif; font-weight: 800;
+        color: var(--gold); font-size: 20px; letter-spacing: .05em; line-height: 1.1;
+      }
+      .card.movie .side { color: #cfe6ea; }
+      .card.movie .pill { background: rgba(255,255,255,.16); color: #fff; }
+
+      /* Thanksgiving card */
+      .card.feast {
+        background: linear-gradient(180deg, #ec8a30 0%, var(--orange-deep) 100%);
+        color: #fff;
+      }
+      .card.feast .date-num { color: #fff; }
+      .card.feast .feast-label {
+        font-family: "Playfair Display", Georgia, serif; font-weight: 800;
+        letter-spacing: .1em; font-size: 16.5px; color: #fff;
+      }
+      .card.feast .side { color: #ffe3c2; }
+
+      /* ---------- Modal ---------- */
+      .backdrop {
+        position: fixed; inset: 0; z-index: 50;
+        background: rgba(12, 6, 22, .72);
+        display: none; align-items: flex-start; justify-content: center;
+        padding: 18px 12px; overflow-y: auto;
+      }
+      .backdrop.open { display: flex; }
+      .modal {
+        background: var(--cream); color: var(--ink);
+        border-radius: 18px; width: 100%; max-width: 620px;
+        padding: 26px 26px 30px; position: relative;
+        box-shadow: 0 18px 50px rgba(0,0,0,.55);
+        margin: auto 0;
+      }
+      @media (max-width: 560px) { .modal { padding: 22px 18px 26px; } }
+      .modal-close {
+        position: absolute; top: 12px; right: 12px;
+        width: 42px; height: 42px; border-radius: 50%;
+        border: none; background: var(--orange); color: #fff;
+        font-size: 20px; font-weight: 900; cursor: pointer; line-height: 1;
+      }
+      .modal .m-date { font-weight: 900; letter-spacing: .18em; font-size: 12.5px; color: var(--red); }
+      .modal h2 { font-family: "Playfair Display", Georgia, serif; font-size: 27px; margin: 4px 44px 2px 0; line-height: 1.15; }
+      .modal .m-sub { color: var(--ink-soft); font-weight: 700; font-size: 15px; margin: 0 0 12px; }
+      .chips { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0 4px; }
+      .chip {
+        background: #f3e3c3; border-radius: 10px; padding: 7px 12px;
+        font-size: 13.5px; font-weight: 800; color: var(--ink);
+      }
+      .chip span { color: var(--ink-soft); font-weight: 700; }
+      .movie-box {
+        background: linear-gradient(180deg, var(--teal), var(--teal-deep));
+        color: #fff; border-radius: 12px; padding: 14px 16px; margin: 14px 0 4px;
+      }
+      .movie-box .mb-label { font-size: 11px; font-weight: 900; letter-spacing: .2em; color: var(--gold-soft); }
+      .movie-box .mb-name { font-family: "Playfair Display", Georgia, serif; font-size: 23px; font-weight: 800; color: var(--gold); margin: 2px 0; }
+      .movie-box .mb-meta { font-size: 13.5px; font-weight: 700; color: #cfe6ea; }
+      .movie-box p { margin: 6px 0 0; font-size: 14.5px; line-height: 1.45; }
+      .modal h3 {
+        font-size: 14px; letter-spacing: .16em; font-weight: 900;
+        color: var(--orange-deep); margin: 20px 0 8px;
+        border-bottom: 2px solid #eed9ae; padding-bottom: 5px;
+      }
+      .modal ul, .modal ol { margin: 0; padding-left: 22px; }
+      .modal li { font-size: 15.5px; line-height: 1.5; margin-bottom: 5px; }
+      .modal .sides-list { list-style: none; padding-left: 0; }
+      .modal .sides-list li { margin-bottom: 9px; }
+      .modal .sides-list b { color: var(--ink); }
+      .modal .sides-list .how { color: var(--ink-soft); font-weight: 600; }
+      /* Phones: recipe popup goes full-screen with its own scrolling and a big close button */
+      @media (max-width: 640px) {
+        .backdrop { padding: 0; overflow: hidden; }
+        .modal {
+          max-width: none; width: 100%; height: 100dvh; max-height: 100dvh;
+          border-radius: 0; margin: 0; overflow-y: auto; -webkit-overflow-scrolling: touch;
+          padding: 24px 20px 40px;
+        }
+        .modal-close {
+          position: fixed; top: 12px; right: 12px; z-index: 5;
+          width: 52px; height: 52px; font-size: 28px;
+          box-shadow: 0 4px 14px rgba(0,0,0,.35);
+        }
+        .modal h2 { font-size: 25px; }
+        .modal li { font-size: 16px; }
+      }
+      footer { text-align: center; color: rgba(253,247,234,.5); font-size: 13px; font-weight: 600; margin-top: 26px; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <svg class="leaf left" viewBox="0 0 48 48" aria-hidden="true"><path d="M24 4C12 12 6 24 8 40c14 2 26-4 34-16C34 22 28 12 24 4Z" fill="#e07b24"/><path d="M12 36C18 26 28 16 38 10" stroke="#bc550d" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>
+        <svg class="leaf right" viewBox="0 0 48 48" aria-hidden="true"><path d="M24 4C12 12 6 24 8 40c14 2 26-4 34-16C34 22 28 12 24 4Z" fill="#c8451b"/><path d="M12 36C18 26 28 16 38 10" stroke="#8f2f10" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>
+        <h1>NOVEMBER MEAL PLAN</h1>
+        <div class="week-range" id="weekRange"></div>
+        <p class="hint">Tap any day to see the full recipe.</p>
+      </header>
+
+      <nav class="week-nav" aria-label="Choose a week">
+        <button type="button" id="prevWeek" aria-label="Previous week">&#8592; Prev week</button>
+        <div class="wk-label" id="wkLabel"></div>
+        <button type="button" id="nextWeek" aria-label="Next week">Next week &#8594;</button>
+      </nav>
+
+      <main>
+        <div class="week-grid" id="weekGrid"></div>
+      </main>
+
+      <footer>Dinner at home, one week at a time.</footer>
+    </div>
+
+    <div class="backdrop" id="backdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal" id="modal">
+        <button type="button" class="modal-close" id="modalClose" aria-label="Close recipe">&times;</button>
+        <div id="modalBody"></div>
+      </div>
+    </div>
+
+    <script>
+      /* ---------- Food icons (small flat illustrations) ---------- */
+      var ICONS = {
+        meatloaf: '<svg viewBox="0 0 64 64" aria-hidden="true"><ellipse cx="32" cy="52" rx="25" ry="5" fill="#e6d7b8"/><path d="M9 44c0-11 10-18 23-18s23 7 23 18v3H9v-3Z" fill="#9c5a2e"/><path d="M9 40c7-3 15-4 23-4s16 1 23 4v-4c-7-3-15-4-23-4s-16 1-23 4v4Z" fill="#c0392b"/><path d="M24 14c-2 3 2 4 0 7M34 12c-2 3 2 4 0 7M44 14c-2 3 2 4 0 7" stroke="#cbb894" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>',
+        pasta: '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M8 34h48c0 10-8 18-18 18h-12C16 52 8 44 8 34Z" fill="#7fb3c8"/><path d="M6 34h52" stroke="#5b8fa8" stroke-width="3" stroke-linecap="round"/><circle cx="24" cy="28" r="8" fill="none" stroke="#f2c14e" stroke-width="3.4"/><circle cx="38" cy="27" r="9" fill="none" stroke="#f6cf6b" stroke-width="3.4"/><circle cx="31" cy="22" r="6" fill="none" stroke="#eab543" stroke-width="3.2"/><circle cx="31" cy="24" r="3.4" fill="#c0392b"/></svg>',
+        burrito: '<svg viewBox="0 0 64 64" aria-hidden="true"><g transform="rotate(38 32 32)"><rect x="14" y="22" width="38" height="21" rx="10.5" fill="#e8c88f"/><path d="M40 22v21" stroke="#d4ab63" stroke-width="3"/><path d="M45 26c3 2 3 11 0 13M20 27c-2 2-2 9 0 11" stroke="#d4ab63" stroke-width="2.6" fill="none" stroke-linecap="round"/></g><circle cx="20" cy="18" r="3" fill="#7cb342"/><circle cx="48" cy="48" r="3" fill="#c0392b"/></svg>',
+        sandwich: '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M10 24c0-6 10-10 22-10s22 4 22 10l-3 5H13l-3-5Z" fill="#f0d09a"/><path d="M12 33c4 3 7-2 10 1s6-2 9 0 6-2 9 0 6-2 10 1l-1 4H13l-1-6Z" fill="#7cb342"/><rect x="13" y="38" width="38" height="5" fill="#e2574c"/><path d="M13 43h38l-3 8H16l-3-8Z" fill="#e8c88f"/></svg>',
+        corndog: '<svg viewBox="0 0 64 64" aria-hidden="true"><g transform="rotate(24 32 32)"><rect x="29" y="38" width="5" height="20" rx="2.5" fill="#d9b06a"/><rect x="19" y="8" width="26" height="36" rx="13" fill="#e8a33d"/><path d="M24 16c3 4 3 8 0 12M33 13c3 4 3 9 0 13M41 17c2 3 2 7 0 10" stroke="#c97e1e" stroke-width="2.6" fill="none" stroke-linecap="round"/></g></svg>',
+        pizza: '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M8 12h48L34 56c-1 2-3 2-4 0L8 12Z" fill="#f6cf6b"/><path d="M8 12h48l-2 7H10L8 12Z" fill="#d98e3a"/><circle cx="26" cy="24" r="4.4" fill="#c0392b"/><circle cx="40" cy="30" r="4.4" fill="#c0392b"/><circle cx="30" cy="40" r="4.4" fill="#c0392b"/><path d="M20 30c2 2 4 2 6 0M38 18c2 2 4 2 6 0" stroke="#7cb342" stroke-width="2.6" fill="none" stroke-linecap="round"/></svg>',
+        nachos: '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M14 44l10-16 8 10 8-12 10 18c1 3-1 5-4 5H18c-3 0-5-2-4-5Z" fill="#e8a33d"/><path d="M24 28l4 6M40 26l4 7M32 38l3 5" stroke="#c97e1e" stroke-width="2.4" stroke-linecap="round"/><path d="M38 8l14 8-6 12c-6-1-12-6-13-12-1-4 1-7 5-8Z" fill="#f2c14e"/><circle cx="43" cy="16" r="2.2" fill="#d9a521"/><circle cx="47" cy="22" r="1.8" fill="#d9a521"/></svg>',
+        porkchop: '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M20 12c10-3 24 3 28 13 3 9-1 19-10 24-8 4-20 2-26-5C5 36 9 16 20 12Z" fill="#e88ca0"/><path d="M24 18c7-2 16 2 19 9" stroke="#d96c87" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="40" cy="40" r="7" fill="#fdf7ea"/><circle cx="40" cy="40" r="3.4" fill="#f3e3c3"/></svg>',
+        lasagna: '<svg viewBox="0 0 64 64" aria-hidden="true"><rect x="10" y="20" width="44" height="30" rx="4" fill="#b8542f"/><rect x="10" y="26" width="44" height="5" fill="#f6e3ac"/><rect x="10" y="35" width="44" height="5" fill="#c0392b"/><rect x="10" y="43" width="44" height="4" fill="#f6e3ac"/><path d="M14 20c6-5 12 2 18-2s12 2 18-1v3H14v-3Z" fill="#f2c14e"/><circle cx="24" cy="17" r="1.8" fill="#7cb342"/><circle cx="36" cy="15" r="1.8" fill="#7cb342"/><circle cx="45" cy="18" r="1.8" fill="#7cb342"/></svg>',
+        taco: '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M8 50a24 24 0 0 1 48 0H8Z" fill="#e8a33d"/><path d="M8 50a24 24 0 0 1 48 0" fill="none" stroke="#c97e1e" stroke-width="2.6"/><circle cx="20" cy="27" r="5" fill="#7cb342"/><circle cx="32" cy="23" r="5.4" fill="#8a5a2b"/><circle cx="44" cy="27" r="5" fill="#c0392b"/><circle cx="26" cy="30" r="3.4" fill="#f2c14e"/><circle cx="38" cy="30" r="3.4" fill="#7cb342"/><circle cx="18" cy="40" r="1.7" fill="#c97e1e"/><circle cx="32" cy="42" r="1.7" fill="#c97e1e"/><circle cx="46" cy="40" r="1.7" fill="#c97e1e"/></svg>',
+        potato: '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 10c11 0 20 10 20 22S43 54 32 54 12 44 12 32 21 10 32 10Z" fill="#b0824f"/><circle cx="26" cy="24" r="2" fill="#8a5f33"/><circle cx="38" cy="30" r="2" fill="#8a5f33"/><circle cx="28" cy="40" r="2" fill="#8a5f33"/><circle cx="40" cy="44" r="1.7" fill="#8a5f33"/><circle cx="22" cy="33" r="1.6" fill="#8a5f33"/></svg>',
+        turkey: '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 8l-4 8M22 10l1 9M42 10l-1 9" stroke="#8a5a2b" stroke-width="4" stroke-linecap="round"/><ellipse cx="32" cy="38" rx="19" ry="15" fill="#a05f2c"/><path d="M18 32c4-3 8-4 12-3M34 52l-4 6M46 50l1 7" stroke="#8a5a2b" stroke-width="3.4" fill="none" stroke-linecap="round"/><circle cx="26" cy="34" r="2.2" fill="#7d4a20"/><path d="M44 28c5-2 9 1 9 5" stroke="#c0392b" stroke-width="3.4" fill="none" stroke-linecap="round"/></svg>',
+        waffle: '<svg viewBox="0 0 64 64" aria-hidden="true"><rect x="12" y="12" width="40" height="40" rx="7" fill="#e0a44a"/><path d="M25 12v40M39 12v40M12 25h40M12 39h40" stroke="#c07f2a" stroke-width="3.4"/><rect x="26" y="24" width="12" height="10" rx="2" fill="#f6d67c"/></svg>',
+        soup: '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M8 30h48c0 11-8 19-18 19h-12C16 49 8 41 8 30Z" fill="#c0392b"/><path d="M6 30h52" stroke="#a93226" stroke-width="3.4" stroke-linecap="round"/><ellipse cx="32" cy="29" rx="20" ry="3.4" fill="#f2c14e"/><path d="M24 16c-2 3 2 4 0 7M34 14c-2 3 2 4 0 7M44 16c-2 3 2 4 0 7" stroke="#b9a888" stroke-width="2.6" fill="none" stroke-linecap="round"/></svg>'
+      };
+
+      /* ---------- Meal data ---------- */
+      var WEEKS = [
+        {
+          label: "Week of Nov 15",
+          range: "NOV 15 &middot; NOV 21",
+          days: [
+            {
+              dow: "SUN", date: 15, iso: "2026-11-15", icon: "meatloaf",
+              meal: "Meatloaf", side: "Mashed Potatoes &amp; Peas",
+              recipe: {
+                serves: "6", prep: "15 min", cook: "55 min",
+                ingredients: [
+                  "2 lbs ground beef (80/20)",
+                  "3/4 cup plain breadcrumbs",
+                  "1/2 cup milk",
+                  "1 egg, beaten",
+                  "1 small onion, finely diced",
+                  "2 cloves garlic, minced",
+                  "2 Tbsp ketchup, plus 1 tsp Worcestershire sauce",
+                  "1 tsp salt &amp; 1/2 tsp black pepper",
+                  "Glaze: 1/3 cup ketchup, 2 Tbsp brown sugar, 1 tsp yellow mustard"
+                ],
+                steps: [
+                  "Heat oven to 350&deg;F. Stir the breadcrumbs and milk together and let sit 5 minutes.",
+                  "Add beef, egg, onion, garlic, ketchup, Worcestershire, salt and pepper. Mix gently with your hands until just combined.",
+                  "Shape into a loaf in a 9x5 loaf pan or on a foil-lined sheet pan.",
+                  "Bake 40 minutes. Stir the glaze ingredients together and spread over the top.",
+                  "Bake 15 minutes more, until the center reads 160&deg;F. Rest 10 minutes before slicing."
+                ],
+                sides: [
+                  { name: "Mashed Potatoes", how: "Boil 2 lbs peeled, cubed potatoes in salted water 15 minutes until tender. Drain and mash with 4 Tbsp butter and 1/2 cup warm milk; salt to taste." },
+                  { name: "Peas", how: "Cook 2 cups frozen peas in a little water 3&ndash;4 minutes. Drain, toss with 1 Tbsp butter and a pinch of salt." }
+                ]
+              }
+            },
+            {
+              dow: "MON", date: 16, iso: "2026-11-16", icon: "pasta",
+              meal: "Creamy Tuscan Chicken Pasta", side: "Side Salad",
+              recipe: {
+                serves: "4&ndash;6", prep: "10 min", cook: "20 min",
+                ingredients: [
+                  "12 oz penne pasta",
+                  "1 1/2 lbs chicken breast, cut into bite-size pieces",
+                  "2 Tbsp olive oil",
+                  "3 cloves garlic, minced",
+                  "1 cup sun-dried tomatoes (or halved cherry tomatoes)",
+                  "1 cup heavy cream",
+                  "1/2 cup grated Parmesan, plus more to serve",
+                  "2 cups baby spinach",
+                  "1 tsp Italian seasoning, salt &amp; pepper to taste"
+                ],
+                steps: [
+                  "Cook pasta in salted water until al dente. Save 1/2 cup of the pasta water, then drain.",
+                  "Season chicken with Italian seasoning, salt and pepper. Sear in hot olive oil 6&ndash;7 minutes until cooked through; set aside.",
+                  "In the same pan, cook garlic and tomatoes 2 minutes. Pour in the cream and simmer 2&ndash;3 minutes.",
+                  "Stir in Parmesan until melted, then add spinach and stir until just wilted.",
+                  "Toss in the pasta and chicken, loosening with a splash of pasta water if needed. Serve with extra Parmesan."
+                ],
+                sides: [
+                  { name: "Side Salad", how: "Toss a bag of mixed greens with Italian dressing. Add cucumber or croutons if you have them." }
+                ]
+              }
+            },
+            {
+              dow: "TUE", date: 17, iso: "2026-11-17", icon: "burrito",
+              meal: "Burrito Bowls", side: "Chips &amp; Salsa",
+              recipe: {
+                serves: "4", prep: "10 min", cook: "15 min",
+                ingredients: [
+                  "1 lb ground beef (or ground chicken)",
+                  "1 packet taco seasoning",
+                  "2 cups cooked white or brown rice",
+                  "1 can (15 oz) black beans, drained and rinsed",
+                  "1 cup frozen corn, thawed",
+                  "2 cups shredded lettuce",
+                  "1 cup shredded cheddar or Mexican-blend cheese",
+                  "Sour cream and salsa, to serve"
+                ],
+                steps: [
+                  "Cook the rice according to the package and keep warm.",
+                  "Brown the beef in a large skillet, breaking it up, 6&ndash;8 minutes. Drain any fat.",
+                  "Stir in the taco seasoning and 1/4 cup water; simmer 2 minutes.",
+                  "Warm the beans and corn in a small pot or the microwave.",
+                  "Build bowls: rice, beef, beans and corn, then top with lettuce, cheese, sour cream and salsa."
+                ],
+                sides: [
+                  { name: "Chips &amp; Salsa", how: "Serve tortilla chips with your favorite jarred salsa on the side for scooping." }
+                ]
+              }
+            },
+            {
+              dow: "WED", date: 18, iso: "2026-11-18", icon: "sandwich",
+              meal: "Crockpot Pulled Pork Sandwiches", side: "Coleslaw &amp; Pickles", tag: "SLOW COOKER",
+              recipe: {
+                serves: "8", prep: "10 min", cook: "8 hrs (slow cooker)",
+                ingredients: [
+                  "3&ndash;4 lb pork shoulder (Boston butt)",
+                  "1 Tbsp brown sugar",
+                  "1 tsp each smoked paprika, garlic powder and salt",
+                  "1/2 tsp black pepper",
+                  "1/2 cup chicken broth (or cola)",
+                  "1 1/2 cups BBQ sauce, plus more to serve",
+                  "8 sandwich buns"
+                ],
+                steps: [
+                  "Mix the sugar and spices and rub all over the pork.",
+                  "Place pork in the slow cooker and pour the broth around it.",
+                  "Cover and cook on LOW 8 hours (or HIGH 4&ndash;5 hours), until it falls apart.",
+                  "Lift out the pork, shred with two forks, and skim the fat from the cooking liquid.",
+                  "Stir the BBQ sauce into the shredded pork with a splash of cooking liquid. Pile onto buns."
+                ],
+                sides: [
+                  { name: "Coleslaw", how: "Toss a 14 oz bag of coleslaw mix with 1/2 cup coleslaw dressing (or mayo with a splash of vinegar and 1 tsp sugar). Chill until serving." },
+                  { name: "Pickles", how: "Serve dill pickle chips on the sandwiches or alongside." }
+                ]
+              }
+            },
+            {
+              dow: "THU", date: 19, iso: "2026-11-19", icon: "corndog",
+              meal: "Corn Dogs", side: "Mac &amp; Cheese",
+              recipe: {
+                serves: "4", prep: "5 min", cook: "20 min",
+                ingredients: [
+                  "8 frozen corn dogs",
+                  "Ketchup and mustard, for dipping",
+                  "Mac &amp; cheese: 8 oz elbow macaroni",
+                  "2 Tbsp butter &amp; 2 Tbsp flour",
+                  "1 1/2 cups milk",
+                  "2 cups shredded cheddar cheese",
+                  "1/2 tsp salt"
+                ],
+                steps: [
+                  "Heat oven to 375&deg;F. Bake the corn dogs on a sheet pan 16&ndash;18 minutes, turning once, until golden and hot.",
+                  "Meanwhile, boil the macaroni until al dente; drain.",
+                  "Melt butter in the same pot, whisk in flour for 1 minute, then slowly whisk in the milk. Simmer until slightly thick, about 3 minutes.",
+                  "Off the heat, stir in cheddar and salt until melted and smooth.",
+                  "Stir the macaroni back in and serve with the corn dogs and dips."
+                ],
+                sides: [
+                  { name: "Mac &amp; Cheese", how: "Made right alongside the corn dogs &mdash; see the steps above. A boxed mac &amp; cheese works too on a busy night." }
+                ]
+              }
+            },
+            {
+              dow: "FRI", date: 20, iso: "2026-11-20", icon: "pizza", type: "movie",
+              meal: "Cheese Pizza Night", side: "Garlic Knots &amp; Salad",
+              movie: {
+                name: "HOME ALONE", year: "1990", meta: "Rated PG &middot; 1h 43m &middot; Family Comedy",
+                blurb: "Eight-year-old Kevin is accidentally left behind at Christmas and defends the house from two bungling burglars. A cheese-pizza kind of movie &mdash; Kevin would approve."
+              },
+              recipe: {
+                serves: "4", prep: "15 min", cook: "12 min",
+                ingredients: [
+                  "1 lb store-bought pizza dough, at room temperature",
+                  "1/2 cup pizza sauce",
+                  "2 cups shredded mozzarella",
+                  "2 Tbsp grated Parmesan",
+                  "1 tsp Italian seasoning (optional)",
+                  "Flour or cornmeal, for stretching the dough"
+                ],
+                steps: [
+                  "Heat oven to 475&deg;F with a sheet pan or pizza stone inside.",
+                  "Stretch the dough on a floured surface into a 12-inch round.",
+                  "Spread sauce to the edges, then cover generously with mozzarella and Parmesan.",
+                  "Bake 10&ndash;12 minutes, until the crust is golden and the cheese is bubbly and spotted.",
+                  "Rest 2 minutes, slice, and serve &mdash; keep the change, ya filthy animal."
+                ],
+                sides: [
+                  { name: "Garlic Knots", how: "Cut refrigerated pizza dough into strips, tie each in a loose knot, and bake at 400&deg;F for 10&ndash;12 minutes. Brush with melted butter mixed with garlic powder and a pinch of salt." },
+                  { name: "Salad", how: "Toss mixed greens with Italian dressing. Simple and crunchy next to the pizza." }
+                ]
+              }
+            },
+            {
+              dow: "SAT", date: 21, iso: "2026-11-21", icon: "nachos",
+              meal: "Loaded Nacho Bar", side: "Toppings Galore",
+              recipe: {
+                serves: "6", prep: "15 min", cook: "10 min",
+                ingredients: [
+                  "1 large bag tortilla chips",
+                  "1 lb ground beef with 1 packet taco seasoning (or leftover pulled pork)",
+                  "2 cups shredded Mexican-blend cheese",
+                  "1 can (15 oz) black beans, drained and rinsed",
+                  "1 cup diced tomatoes",
+                  "1/2 cup sliced black olives",
+                  "Pickled jalape&ntilde;os, sour cream, guacamole and salsa, to serve",
+                  "2 green onions, sliced"
+                ],
+                steps: [
+                  "Heat oven to 375&deg;F. Brown the beef with the taco seasoning; warm the beans.",
+                  "Spread chips in a single layer on a big sheet pan.",
+                  "Scatter the beef, beans and cheese evenly over the chips.",
+                  "Bake 8&ndash;10 minutes, until the cheese is fully melted.",
+                  "Set the pan in the middle of the table with all the toppings in small bowls and let everyone load their own."
+                ],
+                sides: [
+                  { name: "Toppings Bar", how: "Put out tomatoes, olives, jalape&ntilde;os, sour cream, guacamole, salsa and green onions so everyone builds their perfect bite." }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          label: "Week of Nov 22",
+          range: "NOV 22 &middot; NOV 28",
+          days: [
+            {
+              dow: "SUN", date: 22, iso: "2026-11-22", icon: "porkchop",
+              meal: "Smothered Pork Chops", side: "Rice &amp; Green Beans",
+              recipe: {
+                serves: "4", prep: "10 min", cook: "25 min",
+                ingredients: [
+                  "4 bone-in pork chops (about 1 inch thick)",
+                  "1 tsp each garlic powder and paprika, salt &amp; pepper to taste",
+                  "2 Tbsp olive oil",
+                  "1 onion, thinly sliced",
+                  "2 cloves garlic, minced",
+                  "1 can (10.5 oz) cream of mushroom soup",
+                  "1/2 cup chicken broth"
+                ],
+                steps: [
+                  "Season the chops with garlic powder, paprika, salt and pepper.",
+                  "Sear in hot oil 3&ndash;4 minutes per side until golden; set aside.",
+                  "Cook the onion in the same pan 4&ndash;5 minutes until soft. Stir in the garlic for 30 seconds.",
+                  "Whisk in the soup and broth, scraping up the browned bits.",
+                  "Return the chops, cover, and simmer on low 12&ndash;15 minutes, until they reach 145&deg;F. Spoon the gravy over the top."
+                ],
+                sides: [
+                  { name: "Rice", how: "Cook 1 1/2 cups rice according to the package &mdash; perfect for soaking up the extra gravy." },
+                  { name: "Green Beans", how: "Saut&eacute; 1 lb green beans (fresh or frozen) in 1 Tbsp butter with a pinch of garlic powder, 6&ndash;8 minutes, until tender-crisp." }
+                ]
+              }
+            },
+            {
+              dow: "MON", date: 23, iso: "2026-11-23", icon: "lasagna",
+              meal: "Lasagna", side: "Caesar Salad &amp; Garlic Bread",
+              recipe: {
+                serves: "8", prep: "20 min", cook: "50 min",
+                ingredients: [
+                  "9 no-boil lasagna noodles",
+                  "1 lb ground beef",
+                  "1 jar (24 oz) marinara sauce",
+                  "15 oz ricotta cheese",
+                  "1 egg",
+                  "3 cups shredded mozzarella, divided",
+                  "1/2 cup grated Parmesan",
+                  "1 tsp Italian seasoning"
+                ],
+                steps: [
+                  "Heat oven to 375&deg;F. Brown the beef, drain, and stir in the marinara.",
+                  "Mix ricotta, egg, 1 cup mozzarella, Parmesan and Italian seasoning.",
+                  "Spread 1 cup of sauce in a 9x13 dish. Layer 3 noodles, 1/3 of the ricotta mix, and 1/3 of the sauce. Repeat twice, ending with sauce and the remaining mozzarella on top.",
+                  "Cover with foil and bake 25 minutes. Uncover and bake 25 minutes more, until bubbly.",
+                  "Rest 10 minutes before cutting &mdash; it slices much cleaner."
+                ],
+                sides: [
+                  { name: "Caesar Salad", how: "Use a Caesar salad kit, or toss romaine with Caesar dressing, croutons and shaved Parmesan." },
+                  { name: "Garlic Bread", how: "Spread a halved loaf of Italian bread with butter, garlic powder and a pinch of salt. Bake at 375&deg;F for 8&ndash;10 minutes alongside the lasagna." }
+                ]
+              }
+            },
+            {
+              dow: "TUE", date: 24, iso: "2026-11-24", icon: "taco",
+              meal: "Taco Night", side: "Chips &amp; Queso",
+              recipe: {
+                serves: "4&ndash;6", prep: "10 min", cook: "15 min",
+                ingredients: [
+                  "1 lb ground beef",
+                  "1 packet taco seasoning",
+                  "10 crunchy taco shells or small flour tortillas",
+                  "1 1/2 cups shredded cheddar or Mexican-blend cheese",
+                  "2 cups shredded lettuce",
+                  "1 tomato, diced",
+                  "Sour cream and salsa, to serve"
+                ],
+                steps: [
+                  "Brown the beef in a skillet, breaking it up, 6&ndash;8 minutes. Drain the fat.",
+                  "Stir in the taco seasoning and 1/4 cup water; simmer 2&ndash;3 minutes.",
+                  "Warm the shells in a 325&deg;F oven for 5 minutes so they stay crisp.",
+                  "Set out the beef, cheese, lettuce, tomato, sour cream and salsa.",
+                  "Everyone builds their own tacos at the table."
+                ],
+                sides: [
+                  { name: "Chips &amp; Queso", how: "Melt 8 oz cubed Velveeta with 1/2 cup salsa in the microwave in 30-second bursts, stirring between, until smooth. Serve warm with tortilla chips." }
+                ]
+              }
+            },
+            {
+              dow: "WED", date: 25, iso: "2026-11-25", icon: "potato",
+              meal: "Crockpot Potato Soup", side: "Cheddar Biscuits &middot; Oven Free for Turkey Prep", tag: "SLOW COOKER",
+              recipe: {
+                serves: "6", prep: "15 min", cook: "6 hrs (slow cooker)",
+                ingredients: [
+                  "1 bag (30 oz) frozen diced hash brown potatoes",
+                  "1 small onion, diced",
+                  "3 cups chicken broth",
+                  "1 tsp garlic powder, salt &amp; pepper to taste",
+                  "1 cup heavy cream (or half-and-half)",
+                  "1 1/2 cups shredded cheddar, plus more to serve",
+                  "Bacon bits and sliced green onions, to serve"
+                ],
+                steps: [
+                  "Add potatoes, onion, broth, garlic powder, salt and pepper to the slow cooker.",
+                  "Cover and cook on LOW 6&ndash;7 hours (or HIGH 3&ndash;4 hours), until the potatoes are very tender.",
+                  "Mash some of the potatoes right in the pot with a potato masher to thicken the soup.",
+                  "Stir in the cream and cheddar until melted. Taste and adjust the salt.",
+                  "Ladle into bowls and top with extra cheddar, bacon bits and green onions."
+                ],
+                sides: [
+                  { name: "Cheddar Biscuits", how: "Stir 2 cups baking mix (like Bisquick), 2/3 cup milk and 1/2 cup shredded cheddar into a soft dough. Drop 8 spoonfuls onto a sheet pan and bake at 450&deg;F for 8&ndash;10 minutes. Brush with garlic butter." },
+                  { name: "Oven Free for Turkey Prep", how: "The slow cooker does the work tonight so the oven stays clear for tomorrow's turkey prep." }
+                ]
+              }
+            },
+            {
+              dow: "THU", date: 26, iso: "2026-11-26", icon: "turkey", type: "feast",
+              meal: "Turkey &amp; Stuffing", side: "Mashed Potatoes &middot; Gravy &middot; Green Bean Casserole &middot; Cranberry &middot; Rolls &middot; Pumpkin Pie",
+              recipe: {
+                serves: "10", prep: "30 min", cook: "3 1/2&ndash;4 hrs",
+                ingredients: [
+                  "1 whole turkey (12&ndash;14 lbs), thawed, giblets removed",
+                  "1/2 cup butter, softened",
+                  "2 tsp salt &amp; 1 tsp black pepper",
+                  "1 tsp each garlic powder and paprika",
+                  "1 onion, quartered, and a handful of celery stalks",
+                  "2 cups chicken or turkey broth, for the pan"
+                ],
+                steps: [
+                  "Heat oven to 325&deg;F. Pat the turkey dry inside and out.",
+                  "Rub the butter and seasonings all over the skin. Stuff the cavity with the onion and celery.",
+                  "Set the turkey breast-up in a roasting pan, pour the broth around it, and tent loosely with foil.",
+                  "Roast about 13&ndash;15 minutes per pound, removing the foil for the last 45 minutes to brown the skin.",
+                  "The turkey is done at 165&deg;F in the thickest part of the thigh. Rest 30 minutes before carving &mdash; it stays juicier."
+                ],
+                sides: [
+                  { name: "Stuffing", how: "Saut&eacute; diced onion and celery in butter, toss with a bag of herb stuffing mix and warm broth until just moist. Bake at 350&deg;F for 30 minutes." },
+                  { name: "Mashed Potatoes", how: "Boil 3 lbs peeled potatoes until tender, then mash with butter, warm milk and salt." },
+                  { name: "Gravy", how: "Whisk 1/4 cup flour into 1/4 cup pan drippings in a saucepan, then slowly whisk in 2 cups broth. Simmer until thick; season to taste." },
+                  { name: "Green Bean Casserole", how: "Stir 2 cans drained green beans with 1 can cream of mushroom soup and 1/2 cup milk. Top with crispy fried onions and bake at 350&deg;F for 25 minutes." },
+                  { name: "Cranberry, Rolls &amp; Pumpkin Pie", how: "Slice the cranberry sauce, warm the dinner rolls, and serve a store-bought (or homemade) pumpkin pie with whipped cream for dessert." }
+                ]
+              }
+            },
+            {
+              dow: "FRI", date: 27, iso: "2026-11-27", icon: "waffle", type: "movie",
+              meal: "Breakfast for Dinner", side: "Waffles, Bacon &amp; Eggs",
+              movie: {
+                name: "ELF", year: "2003", meta: "Rated PG &middot; 1h 37m &middot; Family Comedy",
+                blurb: "Buddy the Elf travels from the North Pole to New York to find his dad, spreading Christmas cheer (and syrup on everything). Pairs well with waffles for dinner."
+              },
+              recipe: {
+                serves: "4&ndash;6", prep: "10 min", cook: "20 min",
+                ingredients: [
+                  "Waffles: 2 cups flour",
+                  "2 Tbsp sugar &amp; 1 Tbsp baking powder",
+                  "1/2 tsp salt",
+                  "2 eggs &amp; 1 3/4 cups milk",
+                  "1/2 cup melted butter &amp; 1 tsp vanilla",
+                  "12 slices bacon",
+                  "8 eggs, for scrambling",
+                  "Maple syrup and butter, to serve"
+                ],
+                steps: [
+                  "Bake the bacon on a sheet pan at 400&deg;F for 15&ndash;18 minutes, until crisp. No splatter, no fuss.",
+                  "Whisk the flour, sugar, baking powder and salt. In a second bowl whisk eggs, milk, melted butter and vanilla, then combine &mdash; a few lumps are fine.",
+                  "Cook waffles in a hot waffle iron 3&ndash;5 minutes each, until golden and crisp. Keep warm in a low oven.",
+                  "Scramble the eggs low and slow in butter, seasoning with salt and pepper at the end.",
+                  "Serve family-style with warm maple syrup &mdash; Buddy-style spaghetti optional."
+                ],
+                sides: [
+                  { name: "Bacon &amp; Eggs", how: "Cooked right alongside the waffles &mdash; see the steps above." }
+                ]
+              }
+            },
+            {
+              dow: "SAT", date: 28, iso: "2026-11-28", icon: "sandwich",
+              meal: "Leftover Turkey Sandwiches", side: "Soup &amp; Chips",
+              recipe: {
+                serves: "4", prep: "10 min", cook: "5 min",
+                ingredients: [
+                  "2&ndash;3 cups leftover turkey, sliced",
+                  "8 slices hearty bread or 4 rolls",
+                  "4 slices Swiss or provolone cheese",
+                  "Mayo, plus cranberry sauce for spreading",
+                  "Lettuce leaves",
+                  "Leftover stuffing (optional, but highly recommended)"
+                ],
+                steps: [
+                  "Stir a spoonful of cranberry sauce into the mayo for a sweet-tangy spread.",
+                  "Spread on the bread, then layer turkey, cheese and lettuce. Add a thin layer of stuffing if you have it.",
+                  "For a warm sandwich, toast in a skillet with a little butter, 2&ndash;3 minutes per side, until the cheese melts.",
+                  "Slice in half and serve with soup and chips."
+                ],
+                sides: [
+                  { name: "Soup", how: "Reheat leftover soup if there is any, or warm a can of tomato or chicken noodle soup &mdash; perfect for dipping." },
+                  { name: "Chips", how: "A handful of kettle chips on the side for crunch." }
+                ]
+              }
+            }
+          ]
+        }
+      ];
+
+      /* ---------- Rendering ---------- */
+      var grid = document.getElementById("weekGrid");
+      var wkLabel = document.getElementById("wkLabel");
+      var weekRange = document.getElementById("weekRange");
+      var prevBtn = document.getElementById("prevWeek");
+      var nextBtn = document.getElementById("nextWeek");
+      var current = 0;
+
+      function todayIso() {
+        var d = new Date();
+        var m = String(d.getMonth() + 1).padStart(2, "0");
+        var day = String(d.getDate()).padStart(2, "0");
+        return d.getFullYear() + "-" + m + "-" + day;
+      }
+
+      /* Open on the week that contains today, if we have it. */
+      (function () {
+        var t = todayIso();
+        for (var i = 0; i < WEEKS.length; i++) {
+          var days = WEEKS[i].days;
+          if (t >= days[0].iso && t <= days[days.length - 1].iso) { current = i; break; }
+          if (t < days[0].iso) { current = i; break; }
+          current = i;
+        }
+      })();
+
+      function renderWeek() {
+        var week = WEEKS[current];
+        wkLabel.textContent = week.label;
+        weekRange.innerHTML = week.range;
+        prevBtn.disabled = current === 0;
+        nextBtn.disabled = current === WEEKS.length - 1;
+        var t = todayIso();
+        grid.innerHTML = "";
+        week.days.forEach(function (d, idx) {
+          var wrap = document.createElement("div");
+          wrap.className = "day";
+          var dow = document.createElement("div");
+          dow.className = "dow";
+          dow.textContent = d.dow;
+          var btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "card" + (d.type ? " " + d.type : "") + (d.iso === t ? " is-today" : "");
+          btn.setAttribute("aria-label", d.dow + " November " + d.date + ": " + btnText(d.meal) + ". Tap for recipe.");
+          var html = '<span class="date-num">' + d.date + "</span>";
+          if (d.iso === t) html += '<span class="today-badge">TODAY</span>';
+          html += '<span class="icon">' + (ICONS[d.icon] || "") + "</span>";
+          if (d.type === "feast") html += '<span class="feast-label">THANKSGIVING</span>';
+          if (d.type === "movie" && d.movie) html += '<span class="movie-name">' + d.movie.name + "</span>";
+          html += '<span class="meal">' + d.meal + "</span>";
+          html += '<span class="side">' + d.side + "</span>";
+          if (d.tag) html += '<span class="pill">' + d.tag + "</span>";
+          if (d.type === "movie") html += '<span class="pill">MOVIE NIGHT</span>';
+          btn.innerHTML = html;
+          btn.addEventListener("click", function () { openRecipe(current, idx, btn); });
+          wrap.appendChild(dow);
+          wrap.appendChild(btn);
+          grid.appendChild(wrap);
+        });
+      }
+
+      function btnText(s) { var el = document.createElement("span"); el.innerHTML = s; return el.textContent; }
+
+      prevBtn.addEventListener("click", function () { if (current > 0) { current--; renderWeek(); } });
+      nextBtn.addEventListener("click", function () { if (current < WEEKS.length - 1) { current++; renderWeek(); } });
+
+      /* ---------- Recipe popup ---------- */
+      var backdrop = document.getElementById("backdrop");
+      var modalBody = document.getElementById("modalBody");
+      var closeBtn = document.getElementById("modalClose");
+      var lastFocus = null;
+
+      function openRecipe(wi, di, fromEl) {
+        var d = WEEKS[wi].days[di];
+        var r = d.recipe;
+        lastFocus = fromEl || null;
+        var html = "";
+        html += '<div class="m-date">' + d.dow + " &middot; NOVEMBER " + d.date + ", 2026</div>";
+        html += '<h2 id="modalTitle">' + d.meal + "</h2>";
+        html += '<p class="m-sub">' + d.side + "</p>";
+        html += '<div class="chips">'
+          + '<div class="chip"><span>Serves</span> ' + r.serves + "</div>"
+          + '<div class="chip"><span>Prep</span> ' + r.prep + "</div>"
+          + '<div class="chip"><span>Cook</span> ' + r.cook + "</div>"
+          + (d.tag ? '<div class="chip">' + d.tag + "</div>" : "")
+          + "</div>";
+        if (d.type === "movie" && d.movie) {
+          html += '<div class="movie-box"><div class="mb-label">FRIDAY MOVIE NIGHT</div>'
+            + '<div class="mb-name">' + d.movie.name + " (" + d.movie.year + ")</div>"
+            + '<div class="mb-meta">' + d.movie.meta + "</div>"
+            + "<p>" + d.movie.blurb + "</p></div>";
+        }
+        if (d.type === "feast") {
+          html += '<div class="movie-box" style="background:linear-gradient(180deg,#ec8a30,#bc550d)"><div class="mb-label" style="color:#ffe3c2">HAPPY THANKSGIVING</div>'
+            + '<div class="mb-name" style="color:#fff">The Full Feast</div>'
+            + '<div class="mb-meta" style="color:#ffe3c2">Turkey &amp; all the fixings &mdash; sides below</div></div>';
+        }
+        html += "<h3>INGREDIENTS</h3><ul>";
+        r.ingredients.forEach(function (ing) { html += "<li>" + ing + "</li>"; });
+        html += "</ul><h3>STEPS</h3><ol>";
+        r.steps.forEach(function (s) { html += "<li>" + s + "</li>"; });
+        html += "</ol>";
+        if (r.sides && r.sides.length) {
+          html += "<h3>ON THE SIDE</h3><ul class=\"sides-list\">";
+          r.sides.forEach(function (s) { html += "<li><b>" + s.name + "</b> &mdash; <span class=\"how\">" + s.how + "</span></li>"; });
+          html += "</ul>";
+        }
+        modalBody.innerHTML = html;
+        backdrop.classList.add("open");
+        document.body.style.overflow = "hidden";
+        closeBtn.focus();
+      }
+
+      function closeRecipe() {
+        backdrop.classList.remove("open");
+        document.body.style.overflow = "";
+        if (lastFocus) lastFocus.focus();
+      }
+
+      closeBtn.addEventListener("click", closeRecipe);
+      backdrop.addEventListener("click", function (e) { if (e.target === backdrop) closeRecipe(); });
+      document.addEventListener("keydown", function (e) { if (e.key === "Escape" && backdrop.classList.contains("open")) closeRecipe(); });
+
+      renderWeek();
+    </script>
+  </body>
+</html>
