@@ -227,6 +227,57 @@
         .modal li { font-size: 16px; }
       }
       footer { text-align: center; color: rgba(253,247,234,.5); font-size: 13px; font-weight: 600; margin-top: 26px; }
+
+      /* ---------- Dakboard / large landscape screens: fill the full viewport ---------- */
+      /* On wide screens the week stretches to fill the whole height instead of
+         sitting in the top third, and type/icons scale up with the viewport.
+         The tablet and phone layouts below 1081px are unchanged. */
+      @media (min-width: 1081px) {
+        .wrap {
+          max-width: 1760px; width: 100%;
+          min-height: 100dvh;
+          display: flex; flex-direction: column; justify-content: center;
+          padding: 24px 36px 20px;
+        }
+        header { padding: 6px 8px 2px; }
+        .leaf { width: 72px; height: 72px; top: 2px; }
+        h1 { font-size: clamp(52px, 4.6vw, 92px); }
+        .week-range { font-size: clamp(18px, 1.5vw, 28px); margin-top: 10px; }
+        .hint { font-size: clamp(17px, 1.25vw, 24px); margin-top: 12px; }
+        .week-nav { margin: 22px 0 24px; gap: 20px; }
+        .week-nav button { font-size: clamp(17px, 1.3vw, 24px); padding: 14px 28px; min-height: 58px; }
+        .week-nav .wk-label { font-size: clamp(19px, 1.5vw, 28px); min-width: 280px; }
+        main { flex: 1 1 auto; display: flex; min-height: 0; }
+        .week-grid { flex: 1; width: 100%; gap: 18px; }
+        .day { gap: 12px; min-height: 0; }
+        .dow {
+          font-size: clamp(18px, 1.4vw, 26px);
+          padding: 14px 6px; border-radius: 12px;
+          letter-spacing: .26em; text-indent: .26em;
+        }
+        .card {
+          padding: 58px 18px 28px; border-radius: 20px; gap: 10px;
+          justify-content: center;
+        }
+        .card .date-num { font-size: clamp(24px, 1.9vw, 36px); top: 16px; left: 18px; }
+        .card .icon {
+          width: clamp(96px, 8.5vw, 156px); height: clamp(96px, 8.5vw, 156px);
+          margin: 6px 0 8px;
+        }
+        .card .meal { font-size: clamp(22px, 1.85vw, 34px); line-height: 1.15; }
+        .card .side { font-size: clamp(16px, 1.3vw, 24px); line-height: 1.35; }
+        .card.movie .movie-name { font-size: clamp(26px, 2.1vw, 38px); }
+        .card.feast .feast-label { font-size: clamp(20px, 1.6vw, 28px); }
+        .pill { font-size: clamp(12px, 1vw, 17px); padding: 8px 14px; margin-top: 12px; }
+        .today-badge { font-size: clamp(12px, 1vw, 17px); padding: 7px 12px; top: 16px; right: 16px; }
+        footer { font-size: clamp(15px, 1.1vw, 20px); margin-top: 20px; }
+      }
+      /* Give the cards real height on taller displays so the grid — not empty
+         background — takes up the lower half of the screen. The flex stretch
+         above already fills the space; this guards shorter content weeks. */
+      @media (min-width: 1081px) and (min-height: 700px) {
+        .card { min-height: 44vh; }
+      }
     </style>
   </head>
   <body>
